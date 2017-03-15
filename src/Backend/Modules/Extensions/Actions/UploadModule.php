@@ -82,7 +82,6 @@ class UploadModule extends BackendBaseActionAdd
         $allowedDirectories = array(
             'src/Backend/Modules/',
             'src/Frontend/Modules/',
-            'library/external/',
         );
 
         // name of the module we are trying to upload
@@ -105,14 +104,6 @@ class UploadModule extends BackendBaseActionAdd
             foreach ($allowedDirectories as $directory) {
                 // yay, in a valid directory
                 if (mb_stripos($fileName, $prefix . $directory) === 0) {
-                    // we have a library file
-                    if ($directory == $prefix . 'library/external/') {
-                        if (!is_file(PATH_WWW . '/' . $fileName)) {
-                            $files[] = $fileName;
-                        }
-                        break;
-                    }
-
                     // extract the module name from the url
                     $tmpName = trim(str_ireplace($prefix . $directory, '', $fileName), '/');
                     if ($tmpName == '') {
@@ -163,16 +154,16 @@ class UploadModule extends BackendBaseActionAdd
         }
 
         // unpack module files
-        $zip->extractTo(PATH_WWW, $files);
+        $zip->extractTo($this->getContainer()->getParameter('site.path_www'), $files);
 
         // place all the items in the prefixed folders in the right folders
         if (!empty($prefix)) {
             $filesystem = new Filesystem();
             foreach ($files as &$file) {
-                $fullPath = PATH_WWW . '/' . $file;
+                $fullPath = $this->getContainer()->getParameter('site.path_www') . '/' . $file;
                 $newPath = str_replace(
-                    PATH_WWW . '/' . $prefix,
-                    PATH_WWW . '/',
+                    $this->getContainer()->getParameter('site.path_www') . '/' . $prefix,
+                    $this->getContainer()->getParameter('site.path_www') . '/',
                     $fullPath
                 );
 
@@ -186,7 +177,7 @@ class UploadModule extends BackendBaseActionAdd
                 }
             }
 
-            $filesystem->remove(PATH_WWW . '/' . $prefix);
+            $filesystem->remove($this->getContainer()->getParameter('site.path_www') . '/' . $prefix);
         }
 
         // run installer
@@ -210,7 +201,7 @@ class UploadModule extends BackendBaseActionAdd
         $prefix = array();
 
         foreach ($name as $element) {
-            if ($element == 'src' || $element == 'library') {
+            if ($element == 'src') {
                 return implode(PATH_SEPARATOR, $prefix);
             } else {
                 $prefix[] = $element;

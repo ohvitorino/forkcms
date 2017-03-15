@@ -32,9 +32,6 @@ class CoreInstaller extends ModuleInstaller
         if ($this->getVariable('spoon_debug_email') === null) {
             throw new \SpoonException('Spoon debug email is not provided.');
         }
-        if ($this->getVariable('api_email') === null) {
-            throw new \SpoonException('API email is not provided.');
-        }
         if ($this->getVariable('site_title') === null) {
             throw new \SpoonException('Site title is not provided.');
         }
@@ -215,40 +212,15 @@ class CoreInstaller extends ModuleInstaller
             );
         }
 
-        // @TODO this should be removed when the api is kicked out
-        // create new instance
-        require_once PATH_LIBRARY . '/external/fork_api.php';
-        $api = new \ForkAPI();
-
-        try {
-            // get the keys
-            $keys = $api->coreRequestKeys($this->getVariable('site_domain'), $this->getVariable('api_email'));
-
-            // api settings
-            $this->setSetting('Core', 'fork_api_public_key', $keys['public']);
-            $this->setSetting('Core', 'fork_api_private_key', $keys['private']);
-
-            // set keys
-            $api->setPublicKey($keys['public']);
-            $api->setPrivateKey($keys['private']);
-
-            // get services
-            $services = (array) $api->pingGetServices();
-
-            // set services
-            if (!empty($services)) {
-                $this->setSetting(
-                    'Core',
-                    'ping_services',
-                    array('services' => $services, 'date' => time())
-                );
-            }
-        } catch (\Exception $e) {
-            // we don't need those keys.
-        }
-
         // ckfinder
         $this->setSetting('Core', 'ckfinder_license_name', 'Fork CMS');
         $this->setSetting('Core', 'ckfinder_license_key', 'VNA6-BP17-T7D3-CP1B-EMJF-X7Q3-5THF');
+
+        // Enable the cookie bar by default when the timezone is in europe
+        $this->setSetting(
+            'Core',
+            'show_cookie_bar',
+            date_default_timezone_get() && strpos(mb_strtolower(date_default_timezone_get()), 'europe') === 0
+        );
     }
 }

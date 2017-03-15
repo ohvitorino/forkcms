@@ -20,7 +20,6 @@ class RequirementsChecker
      * @var string
      */
     private $rootDir;
-    private $libraryDir;
 
     private $errors;
 
@@ -32,7 +31,6 @@ class RequirementsChecker
     public function __construct($rootDir)
     {
         $this->rootDir = $rootDir;
-        $this->libraryDir = $rootDir . 'library/';
     }
 
     /**
@@ -110,7 +108,7 @@ class RequirementsChecker
 
     /*
      * At first we're going to check to see if the PHP version meets the minimum
-     * requirements for Fork CMS. We require at least PHP 5.5.0, because we don't
+     * requirements for Fork CMS. We require at least PHP 7.0.0, because we don't
      * want to be responsible for security issues in PHP itself.
      *
      * We follow this timeline: http://php.net/supported-versions.php
@@ -119,7 +117,7 @@ class RequirementsChecker
     {
         $this->checkRequirement(
             'phpVersion',
-            version_compare(PHP_VERSION, '5.5.0', '>='),
+            version_compare(PHP_VERSION, '7.0.0', '>='),
             self::STATUS_ERROR
         );
     }
@@ -236,16 +234,6 @@ class RequirementsChecker
         $this->checkRequirement(
             'fileSystemFrontendThemes',
             $this->isWritable($this->rootDir . 'src/Frontend/Themes/'),
-            self::STATUS_WARNING
-        );
-        $this->checkRequirement(
-            'fileSystemLibrary',
-            $this->isWritable($this->libraryDir),
-            self::STATUS_ERROR
-        );
-        $this->checkRequirement(
-            'fileSystemLibraryExternal',
-            $this->isWritable($this->libraryDir . 'external'),
             self::STATUS_WARNING
         );
         $this->checkRequirement(

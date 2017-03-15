@@ -83,7 +83,7 @@ class Edit extends BackendBaseActionEdit
             array(
                 '' => '',
                 'email' => BL::getLabel('Email'),
-                'numeric' => BL::getLabel('Numeric'),
+                'number' => BL::getLabel('Numeric'),
             )
         );
         $this->frm->addText('textbox_validation_parameter');
@@ -321,9 +321,6 @@ class Edit extends BackendBaseActionEdit
 
                 // insert the item
                 $id = (int) BackendFormBuilderModel::update($this->id, $values);
-
-                // trigger event
-                BackendModel::triggerEvent($this->getModule(), 'after_edit', array('item' => $values));
 
                 // everything is saved, so redirect to the overview
                 $this->redirect(

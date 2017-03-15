@@ -409,7 +409,7 @@ class Add extends BackendBaseActionAdd
                 $page['type'] = $parentPage ? 'page' : 'root';
                 $page['title'] = $this->frm->getField('title')->getValue();
                 $page['navigation_title'] = ($this->frm->getField('navigation_title')->getValue(
-                    ) != '') ? $this->frm->getField('navigation_title')->getValue() : $this->frm->getField(
+                ) != '') ? $this->frm->getField('navigation_title')->getValue() : $this->frm->getField(
                     'title'
                 )->getValue();
                 $page['navigation_title_overwrite'] = $this->frm->getField(
@@ -471,9 +471,6 @@ class Add extends BackendBaseActionAdd
 
                 // insert the blocks
                 BackendPagesModel::insertBlocks($this->blocksContent);
-
-                // trigger an event
-                BackendModel::triggerEvent($this->getModule(), 'after_add', $page);
 
                 if ($this->showTags()) {
                     // save tags

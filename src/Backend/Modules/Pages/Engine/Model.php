@@ -18,6 +18,7 @@ use Backend\Modules\ContentBlocks\Engine\Model as BackendContentBlocksModel;
 use Backend\Modules\Extensions\Engine\Model as BackendExtensionsModel;
 use Backend\Modules\Search\Engine\Model as BackendSearchModel;
 use Backend\Modules\Tags\Engine\Model as BackendTagsModel;
+use ForkCMS\App\ForkController;
 use Frontend\Core\Language\Language as FrontendLanguage;
 
 /**
@@ -87,9 +88,6 @@ class Model
 
         $cacheBuilder = static::getCacheBuilder();
         $cacheBuilder->buildCache($language);
-
-        // trigger an event
-        BackendModel::triggerEvent('Pages', 'after_recreated_cache');
     }
 
     /**
@@ -1152,7 +1150,7 @@ class Model
         }
 
         // check if it is an application
-        if (array_key_exists(trim($fullURL, '/'), \ApplicationRouting::getRoutes())) {
+        if (array_key_exists(trim($fullURL, '/'), ForkController::getRoutes())) {
             // add a number
             $url = BackendModel::addNumber($url);
 
