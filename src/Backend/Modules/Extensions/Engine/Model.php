@@ -569,6 +569,26 @@ class Model
     }
 
     /**
+     * Fetch the list of modules that require Google Recaptcha API key
+     *
+     * @return array
+     */
+    public static function getModulesThatRequireGoogleRecaptcha()
+    {
+        $modules = array();
+        $installedModules = BackendModel::getModules();
+
+        foreach ($installedModules as $module) {
+            $setting = BackendModel::get('fork.settings')->get($module, 'requires_google_recaptcha', false);
+            if ($setting) {
+                $modules[] = $module;
+            }
+        }
+
+        return $modules;
+    }
+
+    /**
      * Get a given template
      *
      * @param int $id The id of the requested template.
