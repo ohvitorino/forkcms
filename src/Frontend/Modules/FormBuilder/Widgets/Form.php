@@ -467,7 +467,11 @@ class Form extends FrontendBaseWidget
                 $fieldName = 'field' . $field['id'];
 
                 // skip
-                if ($field['type'] == 'submit' || $field['type'] == 'paragraph' || $field['type'] == 'heading') {
+                if ($field['type'] == 'submit' ||
+                    $field['type'] == 'paragraph' ||
+                    $field['type'] == 'heading' ||
+                    $field['type'] == 'recaptcha'
+                ) {
                     continue;
                 }
 
@@ -521,7 +525,11 @@ class Form extends FrontendBaseWidget
                 // loop all fields
                 foreach ($this->item['fields'] as $field) {
                     // skip
-                    if ($field['type'] == 'submit' || $field['type'] == 'paragraph' || $field['type'] == 'heading') {
+                    if ($field['type'] == 'submit' ||
+                        $field['type'] == 'paragraph' ||
+                        $field['type'] == 'heading' ||
+                        $field['type'] == 'recaptcha'
+                    ) {
                         continue;
                     }
 
