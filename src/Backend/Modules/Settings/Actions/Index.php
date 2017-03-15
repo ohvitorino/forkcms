@@ -36,6 +36,7 @@ class Index extends BackendBaseActionIndex
      */
     private $needsAkismet;
     private $needsGoogleMaps;
+    private $needsGoogleRecaptcha;
 
     /**
      * Execute the action
@@ -47,10 +48,12 @@ class Index extends BackendBaseActionIndex
         // get some data
         $modulesThatRequireAkismet = BackendExtensionsModel::getModulesThatRequireAkismet();
         $modulesThatRequireGoogleMaps = BackendExtensionsModel::getModulesThatRequireGoogleMaps();
+        $modulesThatRequireGoogleRecaptcha = BackendExtensionsModel::getModulesThatRequireGoogleRecaptcha();
 
         // set properties
         $this->needsAkismet = (!empty($modulesThatRequireAkismet));
         $this->needsGoogleMaps = (!empty($modulesThatRequireGoogleMaps));
+        $this->needsGoogleRecaptcha = !empty($modulesThatRequireGoogleRecaptcha);
 
         $this->loadForm();
         $this->validateForm();
@@ -249,6 +252,16 @@ class Index extends BackendBaseActionIndex
                 $this->get('fork.settings')->get('Core', 'google_maps_key', null)
             );
         }
+        if ($this->needsGoogleRecaptcha) {
+            $this->frm->addText(
+                'google_recaptcha_site_key',
+                $this->get('fork.settings')->get('Core', 'google_recaptcha_site_key', null)
+            );
+            $this->frm->addText(
+                'google_recaptcha_secret_key',
+                $this->get('fork.settings')->get('Core', 'google_recaptcha_secret_key', null)
+            );
+        }
 
         // cookies
         $this->frm->addCheckbox('show_cookie_bar', $this->get('fork.settings')->get('Core', 'show_cookie_bar', false));
@@ -267,6 +280,9 @@ class Index extends BackendBaseActionIndex
         }
         if ($this->needsGoogleMaps) {
             $this->tpl->assign('needsGoogleMaps', true);
+        }
+        if ($this->needsGoogleRecaptcha) {
+            $this->tpl->assign('needsGoogleRecaptcha', true);
         }
 
         // parse the form
@@ -464,6 +480,18 @@ class Index extends BackendBaseActionIndex
                         'Core',
                         'google_maps_key',
                         $this->frm->getField('google_maps_key')->getValue()
+                    );
+                }
+                if ($this->needsGoogleRecaptcha) {
+                    $this->get('fork.settings')->set(
+                        'Core',
+                        'google_recaptcha_site_key',
+                        $this->frm->getField('google_recaptcha_site_key')->getValue()
+                    );
+                    $this->get('fork.settings')->set(
+                        'Core',
+                        'google_recaptcha_secret_key',
+                        $this->frm->getField('google_recaptcha_secret_key')->getValue()
                     );
                 }
 
