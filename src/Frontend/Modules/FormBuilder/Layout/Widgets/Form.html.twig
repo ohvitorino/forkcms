@@ -54,7 +54,16 @@
           {% endfor %}
 
           <p>
-            <input type="submit" value="{{ submitValue }}" name="submit" class="inputSubmit" />
+            {% if hasRecaptchaField %}
+              <script>
+                function recaptcha{{ formToken }}Submitted (token, data) {
+                  document.getElementById("{{ formName }}").submit();
+                }
+              </script>
+              <input type="submit" value="{{ submitValue }}" class="g-recaptcha inputSubmit" data-sitekey="{{ siteKey }}" data-callback="recaptcha{{ formToken }}Submitted" data-size="invisible" />
+            {% else %}
+              <input type="submit"{% if hasRecaptchaField %} data-role="fork-recaptcha-validation-trigger"{% endif %} value="{{ submitValue }}" name="submit" class="inputSubmit" />
+            {% endif %}
           </p>
         </form>
       {% endif %}
