@@ -48,6 +48,9 @@ class Installer extends ModuleInstaller
         $this->setActionRights(1, 'FormBuilder', 'Sequence');
         $this->setActionRights(1, 'FormBuilder', 'ExportData');
 
+        // set settings
+        $this->setSetting($this->getModule(), 'requires_google_recaptcha', true);
+
         // set navigation
         $navigationModulesId = $this->setNavigation(null, 'Modules');
         $this->setNavigation($navigationModulesId, 'FormBuilder', 'form_builder/index', array(
