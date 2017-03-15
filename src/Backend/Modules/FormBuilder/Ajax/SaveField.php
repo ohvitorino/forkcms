@@ -32,7 +32,7 @@ class SaveField extends BackendBaseAJAXAction
         $fieldId = \SpoonFilter::getPostValue('field_id', null, '', 'int');
         $type = \SpoonFilter::getPostValue(
             'type',
-            array('checkbox', 'dropdown', 'datetime', 'heading', 'paragraph', 'radiobutton', 'submit', 'textarea', 'textbox'),
+            array('checkbox', 'dropdown', 'datetime', 'heading', 'paragraph', 'radiobutton', 'submit', 'textarea', 'textbox', 'recaptcha'),
             '',
             'string'
         );
