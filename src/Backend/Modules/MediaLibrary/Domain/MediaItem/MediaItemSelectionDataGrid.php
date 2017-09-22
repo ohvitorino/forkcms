@@ -10,45 +10,23 @@ use Backend\Core\Language\Language;
 /**
  * @TODO replace with a doctrine implementation of the data grid
  */
-class MediaItemSelectionDataGrid extends DataGridDatabase
+class MediaItemSelectionDataGrid extends MediaItemDataGrid
 {
-    public function __construct(Type $type, int $folderId = null)
-    {
-        parent::__construct(
-            'SELECT i.id, i.storageType, i.type, i.url, i.title, i.shardingFolderName,
+    protected $query = 'SELECT i.id, i.storageType, i.type, i.url, i.title, i.shardingFolderName,
                 COUNT(gi.mediaItemId) AS num_connected, i.mime, UNIX_TIMESTAMP(i.createdOn) AS createdOn,
                 i.url AS directUrl
              FROM MediaItem AS i
              LEFT OUTER JOIN MediaGroupMediaItem AS gi ON gi.mediaItemId = i.id
-             WHERE i.type = ?' . $this->getWhere($folderId) . ' GROUP BY i.id',
-            $this->getParameters($type, $folderId)
-        );
+             WHERE i.type = ?';
 
-        // filter on folder?
-        if ($folderId !== null) {
-            $this->setURL('&folder=' . $folderId, true);
-        }
+    public function __construct(Type $type, int $folderId = null)
+    {
+        parent::__construct($type, $folderId, false, false);
 
         $this->setExtras($type);
     }
 
-    private function getColumnHeaderLabels(Type $type): array
-    {
-        if ($type->isMovie()) {
-            return [
-                'storageType' => ucfirst(Language::lbl('MediaStorageType')),
-                'url' => ucfirst(Language::lbl('MediaMovieId')),
-                'title' => ucfirst(Language::lbl('MediaMovieTitle')),
-            ];
-        }
-
-        return [
-            'type' => '',
-            'url' => ucfirst(Language::lbl('Image')),
-        ];
-    }
-
-    private function getColumnsThatNeedToBeHidden(Type $type): array
+    protected function getColumnsThatNeedToBeHidden(Type $type): array
     {
         if ($type->isImage()) {
             return ['storageType', 'shardingFolderName', 'type', 'mime', 'directUrl'];
@@ -61,35 +39,9 @@ class MediaItemSelectionDataGrid extends DataGridDatabase
         return ['storageType', 'shardingFolderName', 'type', 'mime', 'url', 'directUrl'];
     }
 
-    public static function getDataGrid(Type $type, int $folderId = null): DataGridDatabase
+    protected function setExtras(Type $type, int $folderId = null): void
     {
-        return new self($type, $folderId);
-    }
-
-    public static function getHtml(Type $type, int $folderId = null): string
-    {
-        return (string) (new self($type, $folderId))->getContent();
-    }
-
-    private function getParameters(Type $type, int $folderId = null): array
-    {
-        $parameters = [(string) $type];
-
-        if ($folderId !== null) {
-            $parameters[] = $folderId;
-        }
-
-        return $parameters;
-    }
-
-    private function getWhere(int $folderId = null): string
-    {
-        return ($folderId !== null) ? ' AND i.mediaFolderId = ?' : '';
-    }
-
-    private function setExtras(Type $type): void
-    {
-        $this->addDataAttributes($type);
+        $this->addDataAttributes();
         $this->setHeaderLabels($this->getColumnHeaderLabels($type));
         $this->setColumnsHidden($this->getColumnsThatNeedToBeHidden($type));
         $this->setSortingColumns(
@@ -160,7 +112,7 @@ class MediaItemSelectionDataGrid extends DataGridDatabase
         );
     }
 
-    private function addDataAttributes(Type $type): void
+    private function addDataAttributes(): void
     {
         // our JS needs to know an id, so we can highlight it
         $attributes = [
@@ -194,5 +146,10 @@ class MediaItemSelectionDataGrid extends DataGridDatabase
                     Model::get('media_library.repository.item')->find($id)
                 );
         }
+    }
+
+    public static function getDataGrid(Type $type, int $folderId = null): DataGridDatabase
+    {
+        return new self($type, $folderId);
     }
 }

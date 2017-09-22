@@ -13,14 +13,16 @@ use SpoonFormDropdown;
  */
 class MediaItemDataGrid extends DataGridDatabase
 {
-    public function __construct(Type $type, int $folderId = null)
-    {
-        parent::__construct(
-            'SELECT i.id, i.storageType, i.type, i.url, i.title, i.shardingFolderName,
+    protected $query = 'SELECT i.id, i.storageType, i.type, i.url, i.title, i.shardingFolderName,
                 COUNT(gi.mediaItemId) as num_connected, i.mime, UNIX_TIMESTAMP(i.createdOn) AS createdOn
              FROM MediaItem AS i
              LEFT OUTER JOIN MediaGroupMediaItem as gi ON gi.mediaItemId = i.id
-             WHERE i.type = ?' . $this->getWhere($folderId) . ' GROUP BY i.id',
+             WHERE i.type = ?';
+
+    public function __construct(Type $type, int $folderId = null, bool $setExtras = true, bool $addMassActions = true)
+    {
+        parent::__construct(
+            $this->query . $this->getWhere($folderId) . ' GROUP BY i.id',
             $this->getParameters($type, $folderId)
         );
 
@@ -29,17 +31,22 @@ class MediaItemDataGrid extends DataGridDatabase
             $this->setURL('&folder=' . $folderId, true);
         }
 
-        $this->setExtras($type);
-        $this->addMassActions($type);
+        if ($setExtras) {
+            $this->setExtras($type);
+        }
+
+        if ($addMassActions) {
+            $this->addMassActions($type);
+        }
     }
 
-    private function addMassActions(Type $type): void
+    protected function addMassActions(Type $type): void
     {
         $this->setMassActionCheckboxes('check', '[id]');
         $this->setMassAction($this->getMassActionDropdown($type));
     }
 
-    private function getColumnHeaderLabels(Type $type): array
+    protected function getColumnHeaderLabels(Type $type): array
     {
         if ($type->isMovie()) {
             return [
@@ -55,7 +62,7 @@ class MediaItemDataGrid extends DataGridDatabase
         ];
     }
 
-    private function getColumnsThatNeedToBeHidden(Type $type): array
+    protected function getColumnsThatNeedToBeHidden(Type $type): array
     {
         if ($type->isImage()) {
             return ['storageType', 'shardingFolderName', 'type', 'mime'];
@@ -110,7 +117,7 @@ class MediaItemDataGrid extends DataGridDatabase
         return ($folderId !== null) ? ' AND i.mediaFolderId = ?' : '';
     }
 
-    private function setExtras(Type $type, int $folderId = null): void
+    protected function setExtras(Type $type, int $folderId = null): void
     {
         $editActionUrl = Model::createUrlForAction('MediaItemEdit');
         $this->setHeaderLabels($this->getColumnHeaderLabels($type));
