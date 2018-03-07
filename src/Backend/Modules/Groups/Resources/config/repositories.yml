@@ -1,0 +1,6 @@
+services:
+  groups.repository.group:
+    class: Backend\Modules\Groups\Domain\Group\GroupRepository
+    factory: ["@doctrine.orm.entity_manager", getRepository]
+    arguments:
+      - Backend\Modules\Groups\Domain\Group\Group

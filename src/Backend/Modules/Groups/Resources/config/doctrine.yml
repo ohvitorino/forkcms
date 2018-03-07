@@ -1,0 +1,9 @@
+doctrine:
+  orm:
+    mappings:
+      groups_group:
+        type: annotation
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Backend/Modules/groups/Domain/Group"
+        alias: Group
+        prefix: Backend\Modules\Groups\Domain\Group
