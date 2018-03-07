@@ -55,7 +55,8 @@ class Group
      * @ORM\OneToMany(
      *     targetEntity="Backend\Modules\Groups\Domain\Setting\Setting",
      *     mappedBy="group",
-     *     cascade={"ALL"}
+     *     cascade={"ALL"},
+     *     orphanRemoval=true
      * )
      */
     private $settings;
