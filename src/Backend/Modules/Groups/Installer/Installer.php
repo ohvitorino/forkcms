@@ -40,10 +40,16 @@ class Installer extends ModuleInstaller
     {
         // Set navigation for "Settings"
         $navigationSettingsId = $this->setNavigation(null, 'Settings');
-        $this->setNavigation($navigationSettingsId, 'Groups', 'groups/index', [
-            'groups/add',
-            'groups/edit',
-        ], 5);
+        $this->setNavigation(
+            $navigationSettingsId,
+            'Groups',
+            'groups/index',
+            [
+                'groups/add',
+                'groups/edit',
+            ],
+            5
+        );
     }
 
     private function configureBackendRights(): void
@@ -60,13 +66,13 @@ class Installer extends ModuleInstaller
     {
         $database = $this->getDatabase();
 
-        // build groupsetting
+        // build group setting
         $groupSetting = [];
         $groupSetting['group_id'] = 1;
         $groupSetting['name'] = 'dashboard_sequence';
         $groupSetting['value'] = serialize([]);
 
-        // build usersetting
+        // build user setting
         $userSetting = [];
         $userSetting['user_id'] = 1;
         $userSetting['name'] = 'dashboard_sequence';
