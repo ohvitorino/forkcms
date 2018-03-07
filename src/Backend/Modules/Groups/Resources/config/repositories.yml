@@ -4,3 +4,8 @@ services:
     factory: ["@doctrine.orm.entity_manager", getRepository]
     arguments:
       - Backend\Modules\Groups\Domain\Group\Group
+  groups.repository.setting:
+    class: Backend\Modules\Groups\Domain\Setting\SettingRepository
+    factory: ["@doctrine.orm.entity_manager", getRepository]
+    arguments:
+      - Backend\Modules\Groups\Domain\Setting\Setting
