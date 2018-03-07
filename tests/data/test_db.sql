@@ -399,12 +399,12 @@ CREATE TABLE `forms_fields_validation` (
 
 DROP TABLE IF EXISTS `groups`;
 
-CREATE TABLE `groups` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parameters` text COLLATE utf8mb4_unicode_ci COMMENT 'serialized array containing default user module/action rights',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS `groups` (
+	`id` INT AUTO_INCREMENT NOT NULL,
+	`name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+	`parameters` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'serialized array containing default user module/action rights',
+	PRIMARY KEY(id)
+) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 LOCK TABLES `groups` WRITE;
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;
@@ -425,13 +425,14 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `groups_rights_actions`;
 
 CREATE TABLE `groups_rights_actions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group_id` int(11) NOT NULL,
-  `module` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'name of the module',
-  `action` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'name of the action',
-  `level` double NOT NULL DEFAULT '1' COMMENT 'unix type levels 1, 3, 5 and 7',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+	`id` INT AUTO_INCREMENT NOT NULL,
+	`group_id` INT DEFAULT NULL,
+	`module` VARCHAR(255) NOT NULL COMMENT 'name of the module',
+	`action` VARCHAR(255) NOT NULL COMMENT 'name of the action',
+	`level` INT NOT NULL COMMENT 'unix type levels 1, 3, 5 and 7',
+	INDEX IDX_15585189FE54D947 (group_id),
+	PRIMARY KEY(id)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB;
 
 LOCK TABLES `groups_rights_actions` WRITE;
 /*!40000 ALTER TABLE `groups_rights_actions` DISABLE KEYS */;
@@ -602,12 +603,12 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `groups_rights_modules`;
 
 CREATE TABLE `groups_rights_modules` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group_id` int(11) NOT NULL,
-  `module` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'name of the module',
-  PRIMARY KEY (`id`),
-  KEY `idx_group_id` (`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+	`id` INT AUTO_INCREMENT NOT NULL,
+	`group_id` INT DEFAULT NULL,
+	`module` VARCHAR(255) NOT NULL COMMENT 'name of the module',
+	INDEX IDX_3EA7E3B1FE54D947 (group_id),
+	PRIMARY KEY(id)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB;
 
 LOCK TABLES `groups_rights_modules` WRITE;
 /*!40000 ALTER TABLE `groups_rights_modules` DISABLE KEYS */;
@@ -644,11 +645,12 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `groups_settings`;
 
 CREATE TABLE `groups_settings` (
-  `group_id` int(11) NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'name of the setting',
-  `value` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'serialized value',
-  PRIMARY KEY (`group_id`,`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+	`name` VARCHAR(255) NOT NULL COMMENT 'name of the setting',
+	`group_id` INT NOT NULL,
+	`value` LONGTEXT DEFAULT NULL COMMENT 'serialized value',
+	INDEX IDX_5E575A1AFE54D947 (group_id),
+	PRIMARY KEY(group_id, name)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB;
 
 LOCK TABLES `groups_settings` WRITE;
 /*!40000 ALTER TABLE `groups_settings` DISABLE KEYS */;
