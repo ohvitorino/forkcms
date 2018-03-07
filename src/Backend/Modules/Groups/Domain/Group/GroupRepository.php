@@ -16,4 +16,10 @@ class GroupRepository extends EntityRepository
     {
         $this->getEntityManager()->flush($group);
     }
+
+    public function remove(Group $group): void
+    {
+        $this->getEntityManager()->remove($group);
+        $this->getEntityManager()->flush($group);
+    }
 }

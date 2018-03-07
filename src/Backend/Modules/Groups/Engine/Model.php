@@ -56,7 +56,15 @@ class Model
 
     public static function delete(int $groupId): void
     {
-        BackendModel::getContainer()->get('database')->delete('groups', 'id = ?', [$groupId]);
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::get('groups.repository.group');
+        $group = $groupRepository->findOneBy(['id' => $groupId]);
+
+        if (!$group instanceof Group) {
+            return;
+        }
+
+        $groupRepository->remove($group);
     }
 
     public static function deleteActionPermissions(array $actionPermissions): void
