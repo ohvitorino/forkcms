@@ -5,12 +5,13 @@ namespace Backend\Modules\Groups\Domain\Group;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="Backend\Modules\Groups\Domain\Group\GroupRepository")
  * @ORM\Table(name="groups")
  */
-class Group
+class Group implements JsonSerializable
 {
     /**
      * @var int
@@ -108,5 +109,14 @@ class Group
     public function getSettings(): Collection
     {
         return $this->settings;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'parameters' => $this->getParameters(),
+        ];
     }
 }

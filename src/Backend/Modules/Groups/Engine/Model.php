@@ -6,7 +6,6 @@ use Backend\Core\Engine\Model as BackendModel;
 use Backend\Modules\Groups\Domain\Group\Group;
 use Backend\Modules\Groups\Domain\Group\GroupRepository;
 use Backend\Modules\Groups\Domain\Setting\Setting;
-use Backend\Modules\Groups\Domain\Setting\SettingRepository;
 
 /**
  * In this file we store all generic functions that we will be using in the groups module.
@@ -133,12 +132,17 @@ class Model
 
     public static function get(int $groupId): array
     {
-        return (array) BackendModel::getContainer()->get('database')->getRecord(
-            'SELECT i.*
-             FROM groups AS i
-             WHERE i.id = ?',
-            [$groupId]
-        );
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::get('groups.repository.group');
+
+        /** @var Group $group */
+        $group = $groupRepository->find($groupId);
+
+        if (!$group instanceof Group) {
+            return [];
+        }
+
+        return $group->jsonSerialize();
     }
 
     public static function getActionPermissions(int $groupId): array
