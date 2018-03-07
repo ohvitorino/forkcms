@@ -46,12 +46,10 @@ class Model
 
     public static function alreadyExists(string $groupName): bool
     {
-        return (bool) BackendModel::getContainer()->get('database')->getVar(
-            'SELECT i.*
-             FROM groups AS i
-             WHERE i.name = ?',
-            [$groupName]
-        );
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::get('groups.repository.group');
+
+        return $groupRepository->findOneBy(['name' => $groupName]) instanceof Group;
     }
 
     public static function delete(int $groupId): void
