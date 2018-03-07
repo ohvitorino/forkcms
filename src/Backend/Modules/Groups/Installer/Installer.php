@@ -12,7 +12,7 @@ class Installer extends ModuleInstaller
     public function install(): void
     {
         $this->addModule('Groups');
-        $this->importSQL(__DIR__ . '/Data/install.sql');
+        $this->configureEntities();
         $this->importLocale(__DIR__ . '/Data/locale.xml');
         $this->configureBackendNavigation();
         $this->configureBackendRights();
