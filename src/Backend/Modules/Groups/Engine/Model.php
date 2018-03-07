@@ -107,12 +107,10 @@ class Model
      */
     public static function exists(int $id): bool
     {
-        return (bool) BackendModel::getContainer()->get('database')->getVar(
-            'SELECT i.*
-             FROM groups AS i
-             WHERE i.id = ?',
-            [$id]
-        );
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::get('groups.repository.group');
+
+        return $groupRepository->find($id) instanceof Group;
     }
 
     public static function existsActionPermission(array $permission): bool
