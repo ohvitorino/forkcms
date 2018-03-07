@@ -2,7 +2,12 @@
 
 namespace Backend\Modules\Groups\Installer;
 
+use Backend\Core\Engine\Model;
 use Backend\Core\Installer\ModuleInstaller;
+use Backend\Modules\Groups\Domain\Group\Group;
+use Backend\Modules\Groups\Domain\RightsAction\RightsAction;
+use Backend\Modules\Groups\Domain\RightsModule\RightsModule;
+use Backend\Modules\Groups\Domain\Setting\Setting;
 
 /**
  * Installer for the groups module
@@ -17,6 +22,18 @@ class Installer extends ModuleInstaller
         $this->configureBackendNavigation();
         $this->configureBackendRights();
         $this->configureBackendWidgets();
+    }
+
+    private function configureEntities(): void
+    {
+        Model::get('fork.entity.create_schema')->forEntityClasses(
+            [
+                Group::class,
+                RightsAction::class,
+                RightsModule::class,
+                Setting::class,
+            ]
+        );
     }
 
     private function configureBackendNavigation(): void
