@@ -4,6 +4,24 @@ doctrine:
       groups_group:
         type: annotation
         is_bundle: false
-        dir: "%kernel.project_dir%/src/Backend/Modules/groups/Domain/Group"
+        dir: "%kernel.project_dir%/src/Backend/Modules/Groups/Domain/Group"
         alias: Group
         prefix: Backend\Modules\Groups\Domain\Group
+      groups_rights_action:
+        type: annotation
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Backend/Modules/Groups/Domain/RightsAction"
+        alias: RightsAction
+        prefix: Backend\Modules\Groups\Domain\RightsAction
+      groups_rights_modules:
+        type: annotation
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Backend/Modules/Groups/Domain/RightsModule"
+        alias: RightsModule
+        prefix: Backend\Modules\Groups\Domain\RightsModule
+      groups_setting:
+        type: annotation
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Backend/Modules/Groups/Domain/Setting"
+        alias: Setting
+        prefix: Backend\Modules\Groups\Domain\Setting
