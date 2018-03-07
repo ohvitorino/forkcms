@@ -74,6 +74,12 @@ class Group
         $this->settings = new ArrayCollection();
     }
 
+    public function update(string $name, ?string $parameters): void
+    {
+        $this->name = $name;
+        $this->parameters = $parameters;
+    }
+
     public function getId(): int
     {
         return $this->id;

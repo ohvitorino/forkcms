@@ -260,11 +260,27 @@ class Model
      */
     public static function update(array $group, array $setting): void
     {
-        // update group
-        BackendModel::getContainer()->get('database')->update('groups', ['name' => $group['name']], 'id = ?', [$group['id']]);
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::get('groups.repository.group');
+        /** @var Group $group */
+        $groupObject = $groupRepository->find($group['id']);
 
-        // update setting
-        self::updateSetting($setting);
+        if (!$groupObject instanceof Group) {
+            return;
+        }
+
+        $groupObject->update($group['name'], $group['parameters']);
+
+        /** @var Setting $settingObject */
+        foreach ($groupObject->getSettings() as $settingObject) {
+            if ($settingObject->getName() === $setting['name']) {
+                $settingObject->update($setting['name'], $setting['value']);
+
+                break;
+            }
+        }
+
+        $groupRepository->save($groupObject);
     }
 
     public static function updateSetting(array $setting): void

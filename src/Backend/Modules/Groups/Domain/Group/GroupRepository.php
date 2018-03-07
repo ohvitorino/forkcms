@@ -11,4 +11,9 @@ class GroupRepository extends EntityRepository
         $this->getEntityManager()->persist($group);
         $this->getEntityManager()->flush($group);
     }
+
+    public function save(Group $group): void
+    {
+        $this->getEntityManager()->flush($group);
+    }
 }
