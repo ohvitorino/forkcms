@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Backend\Modules\Groups\Domain\Group\GroupRepository")
- * @ORM\Table(name="group")
+ * @ORM\Table(name="groups")
  */
 class Group
 {
@@ -31,7 +31,7 @@ class Group
     /**
      * @var string|null
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $parameters;
 
@@ -52,7 +52,11 @@ class Group
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Backend\Modules\Groups\Domain\Setting\Setting", mappedBy="group")
+     * @ORM\OneToMany(
+     *     targetEntity="Backend\Modules\Groups\Domain\Setting\Setting",
+     *     mappedBy="group",
+     *     cascade={"ALL"}
+     * )
      */
     private $settings;
 

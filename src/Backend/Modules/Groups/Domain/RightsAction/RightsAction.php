@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="groups_rights_action")
+ * @ORM\Table(name="groups_rights_actions")
  */
 class RightsAction
 {

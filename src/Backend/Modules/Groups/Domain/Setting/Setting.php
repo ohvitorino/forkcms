@@ -6,7 +6,7 @@ use Backend\Modules\Groups\Domain\Group\Group;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Backend\Modules\Groups\Domain\Setting\SettingRepository")
  * @ORM\Table(name="groups_settings")
  */
 class Setting
@@ -29,20 +29,21 @@ class Setting
     private $name;
 
     /**
-     * @var array
+     * @var array|null
      *
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $value;
 
-    /**
-     * @param Group $group
-     * @param string $name
-     * @param array $value
-     */
-    public function __construct(Group $group, string $name, array $value)
+    public function __construct(Group $group, string $name, ?string $value)
     {
         $this->group = $group;
+        $this->name = $name;
+        $this->value = $value;
+    }
+
+    public function update(string $name, ?string $value): void
+    {
         $this->name = $name;
         $this->value = $value;
     }
@@ -57,7 +58,7 @@ class Setting
         return $this->name;
     }
 
-    public function getValue(): array
+    public function getValue(): ?string
     {
         return $this->value;
     }
