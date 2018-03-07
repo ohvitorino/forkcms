@@ -3,6 +3,10 @@
 namespace Backend\Modules\Groups\Engine;
 
 use Backend\Core\Engine\Model as BackendModel;
+use Backend\Modules\Groups\Domain\Group\Group;
+use Backend\Modules\Groups\Domain\Group\GroupRepository;
+use Backend\Modules\Groups\Domain\Setting\Setting;
+use Backend\Modules\Groups\Domain\Setting\SettingRepository;
 
 /**
  * In this file we store all generic functions that we will be using in the groups module.
@@ -217,25 +221,19 @@ class Model
 
     /**
      * Insert a group and a setting
-     *
-     * @param array $group The group to insert.
-     * @param array $setting The setting to insert.
-     *
-     * @return int
      */
     public static function insert(array $group, array $setting): int
     {
-        // insert group
-        $groupId = BackendModel::getContainer()->get('database')->insert('groups', $group);
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::get('groups.repository.group');
+        $groupObject = new Group($group['name'], $group['parameters']);
+        $groupRepository->add($groupObject);
 
-        // build setting
-        $setting['group_id'] = $groupId;
+        $groupObject->getSettings()->add(new Setting($groupObject, $setting['name'], $setting['value']));
 
-        // insert setting
-        self::insertSetting($setting);
+        $groupRepository->save($groupObject);
 
-        // return the id
-        return $groupId;
+        return $groupObject->getId();
     }
 
     public static function insertMultipleGroups(int $userId, array $groups): void
@@ -252,11 +250,6 @@ class Model
                 ['user_id' => $userId, 'group_id' => $group]
             );
         }
-    }
-
-    public static function insertSetting(array $setting): int
-    {
-        return BackendModel::getContainer()->get('database')->insert('groups_settings', $setting);
     }
 
     /**

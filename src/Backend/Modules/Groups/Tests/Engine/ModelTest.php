@@ -281,21 +281,6 @@ class ModelTest extends WebTestCase
         $this->assertCount(3, $groups);
     }
 
-    public function testInsertSetting(): void
-    {
-        Model::insertSetting(['group_id' => 1, 'name' => 'test', 'value' => serialize(null)]);
-
-        $insertedSettingItems = BackendModel::getContainer()->get('database')->getRecords(
-            'SELECT * FROM `groups_settings` WHERE name = ?',
-            ['test']
-        );
-
-        $this->assertCount(1, $insertedSettingItems);
-        $this->assertEquals(1, $insertedSettingItems[0]['group_id']);
-        $this->assertEquals('test', $insertedSettingItems[0]['name']);
-        $this->assertEquals(null, unserialize($insertedSettingItems[0]['value']));
-    }
-
     public function testUpdate(): void
     {
         $existingGroupItem = BackendModel::getContainer()->get('database')->getRecord(
