@@ -165,6 +165,27 @@ class ModelTest extends WebTestCase
         $this->assertTrue($exists);
     }
 
+    public function testExistsModulePermissionForUnexistingGroup()
+    {
+        $exists = Model::existsModulePermission(['group_id' => 10, 'module' => 'test']);
+
+        $this->assertFalse($exists);
+    }
+
+    public function testExistsModulePermissionForUnexistingModule()
+    {
+        $exists = Model::existsModulePermission(['group_id' => 10, 'module' => 'unexisting']);
+
+        $this->assertFalse($exists);
+    }
+
+    public function testExistsModulePermissionForNullGroupAndModule()
+    {
+        $exists = Model::existsModulePermission(['group_id' => null, 'module' => null]);
+
+        $this->assertFalse($exists);
+    }
+
     public function testGet(): void
     {
         $group = Model::get(1);
@@ -178,11 +199,34 @@ class ModelTest extends WebTestCase
         $this->assertNull($group['parameters']);
     }
 
+    public function testGetUnexistingGroup()
+    {
+        $group = Model::get(10);
+
+        $this->assertEquals([], $group);
+    }
+
     public function testGetActionPermissions(): void
     {
-        $actionPermissions = Model::getActionPermissions('1');
+        $actionPermissions = Model::getActionPermissions(1);
 
         $this->assertCount(145, $actionPermissions);
+
+        foreach ($actionPermissions as $actionPermission) {
+            $this->assertArrayHasKey('module', $actionPermission);
+            $this->assertArrayHasKey('action', $actionPermission);
+        }
+
+        $actionPermissions = Model::getActionPermissions(1000);
+
+        $this->assertCount(0, $actionPermissions);
+    }
+
+    public function testGetActionPermissionsForUnexistingGroup(): void
+    {
+        $actionPermissions = Model::getActionPermissions(1000);
+
+        $this->assertCount(0, $actionPermissions);
     }
 
     public function testGetAll(): void
@@ -208,6 +252,17 @@ class ModelTest extends WebTestCase
 
         $this->assertCount(1, $groups);
         $this->assertEquals($userGroups[0]['group_id'], $groups[0]['id']);
+
+        $groups = Model::getGroupsByUser(1000);
+
+        $this->assertCount(0, $groups);
+    }
+
+    public function testGetGroupsByUserNonExistingUser(): void
+    {
+        $groups = Model::getGroupsByUser(1000);
+
+        $this->assertCount(0, $groups);
     }
 
     public function testIsUserInGroup(): void
@@ -222,15 +277,31 @@ class ModelTest extends WebTestCase
 
         $this->assertCount(17, $modulePermissions);
 
-        $modulePermissions = Model::getModulePermissions(10);
+        $modulePermissions = Model::getModulePermissions(1000);
+
+        $this->assertCount(0, $modulePermissions);
+    }
+
+    public function testGetModulePermissionsForNonExistingGroup(): void
+    {
+        $modulePermissions = Model::getModulePermissions(1000);
 
         $this->assertCount(0, $modulePermissions);
     }
 
     public function testGetSetting(): void
     {
-        $setting = Model::getSetting('1', 'dashboard_sequence');
+        $setting = Model::getSetting(1, 'dashboard_sequence');
         $this->assertNotNull($setting);
+
+        $setting = Model::getSetting(1, 'unexisting_setting');
+        $this->assertEquals([], $setting);
+    }
+
+    public function testGetSettingForNonExistingSetting(): void
+    {
+        $setting = Model::getSetting(1, 'unexisting_setting');
+        $this->assertEquals([], $setting);
     }
 
     public function testGetUsers(): void
@@ -238,11 +309,22 @@ class ModelTest extends WebTestCase
         $users = Model::getUsers(1);
 
         $this->assertCount(1, $users);
+
+        $users = Model::getUsers(1000);
+
+        $this->assertCount(0, $users);
+    }
+
+    public function testGetUsersForNonExistingGroup(): void
+    {
+        $users = Model::getUsers(1000);
+
+        $this->assertCount(0, $users);
     }
 
     public function testInsert(): void
     {
-        Model::insert(
+        $groupId = Model::insert(
             [
                 'name' => 'test',
                 'parameters' => null,
@@ -252,6 +334,8 @@ class ModelTest extends WebTestCase
                 'value' => serialize(null),
             ]
         );
+
+        $this->assertInternalType('int', $groupId);
 
         $insertedGroupItem = BackendModel::getContainer()->get('database')->getRecords(
             'SELECT * FROM `groups` WHERE name = ?',
