@@ -2,6 +2,8 @@
 
 namespace Backend\Modules\Groups\Domain\Group;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -34,6 +36,27 @@ class Group
     private $parameters;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Backend\Modules\Groups\Domain\RightsAction\RightsAction", mappedBy="group")
+     */
+    private $rightsActions;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Backend\Modules\Groups\Domain\RightsModule\RightsModule", mappedBy="group")
+     */
+    private $rightsModules;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Backend\Modules\Groups\Domain\Setting\Setting", mappedBy="group")
+     */
+    private $settings;
+
+    /**
      * @param string $name
      * @param null|string $parameters
      */
@@ -41,6 +64,9 @@ class Group
     {
         $this->name = $name;
         $this->parameters = $parameters;
+        $this->rightsActions = new ArrayCollection();
+        $this->rightsModules = new ArrayCollection();
+        $this->settings = new ArrayCollection();
     }
 
     public function getId(): int
@@ -56,5 +82,20 @@ class Group
     public function getParameters(): ?string
     {
         return $this->parameters;
+    }
+
+    public function getRightsActions(): Collection
+    {
+        return $this->rightsActions;
+    }
+
+    public function getRightsModules(): Collection
+    {
+        return $this->rightsModules;
+    }
+
+    public function getSettings(): Collection
+    {
+        return $this->settings;
     }
 }
