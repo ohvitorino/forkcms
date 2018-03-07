@@ -54,34 +54,49 @@ CREATE TABLE IF NOT EXISTS `modules_tags` (
 
 
 CREATE TABLE IF NOT EXISTS `groups` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parameters` text COLLATE utf8mb4_unicode_ci COMMENT 'serialized array containing default user module/action rights',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1 ;
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parameters` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'serialized array containing default user module/action rights',
+  PRIMARY KEY(id)
+) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+CREATE TABLE `groups_rights_actions` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `group_id` INT DEFAULT NULL,
+  `module` VARCHAR(255) NOT NULL,
+  `action` VARCHAR(255) NOT NULL,
+  `level` INT NOT NULL,
+  INDEX IDX_15585189FE54D947 (group_id),
+  PRIMARY KEY(id)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB;
+
+
+CREATE TABLE `groups_rights_modules` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `group_id` INT DEFAULT NULL,
+  `module` VARCHAR(255) NOT NULL,
+  INDEX IDX_3EA7E3B1FE54D947 (group_id),
+  PRIMARY KEY(id)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB;
+
+
+CREATE TABLE `groups_settings` (
+  `name` VARCHAR(255) NOT NULL,
+  `group_id` INT NOT NULL,
+  `value` LONGTEXT DEFAULT NULL,
+  INDEX IDX_5E575A1AFE54D947 (group_id),
+  PRIMARY KEY(group_id, name)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB;
+
+
+ALTER TABLE `groups_rights_actions` ADD CONSTRAINT FK_15585189FE54D947 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE;
+ALTER TABLE `groups_rights_modules` ADD CONSTRAINT FK_3EA7E3B1FE54D947 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE;
+ALTER TABLE `groups_settings` ADD CONSTRAINT FK_5E575A1AFE54D947 FOREIGN KEY (group_id) REFERENCES groups (id);
 
 
 INSERT INTO `groups` (`id`, `name`, `parameters`) VALUES
 (1, 'admin', NULL) ON DUPLICATE KEY UPDATE id=1;
-
-
-CREATE TABLE IF NOT EXISTS `groups_rights_actions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group_id` int(11) NOT NULL,
-  `module` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'name of the module',
-  `action` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'name of the action',
-  `level` double NOT NULL DEFAULT '1' COMMENT 'unix type levels 1, 3, 5 and 7',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1 ;
-
-
-CREATE TABLE IF NOT EXISTS `groups_rights_modules` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group_id` int(11) NOT NULL,
-  `module` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'name of the module',
-  PRIMARY KEY (`id`),
-  KEY `idx_group_id` (`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1 ;
 
 
 CREATE  TABLE IF NOT EXISTS `backend_navigation` (
