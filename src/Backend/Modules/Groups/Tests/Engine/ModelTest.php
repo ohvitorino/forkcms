@@ -21,11 +21,34 @@ class ModelTest extends WebTestCase
 
     public function testAddActionPermissions(): void
     {
+        Model::addActionPermissions(
+            [
+                ['group_id' => 1, 'module' => 'test', 'action' => 'test_action', 'level' => 7],
+            ]
+        );
+
+        $actionPermissions = BackendModel::getContainer()->get('database')->getRecords(
+            'SELECT * FROM groups_rights_actions WHERE group_id = ? AND module = ? AND action = ? AND level = ?',
+            [1, 'test', 'test_action', 7]
+        );
+
+        $this->assertCount(1, $actionPermissions);
     }
 
     public function testAddModulePermissions(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        Model::addModulePermissions(
+            [
+                ['group_id' => 1, 'module' => 'test'],
+            ]
+        );
+
+        $modulePermissions = BackendModel::getContainer()->get('database')->getRecords(
+            'SELECT * FROM groups_rights_modules WHERE group_id = ? AND module = ?',
+            [1, 'test']
+        );
+
+        $this->assertCount(1, $modulePermissions);
     }
 
     public function testAlreadyExists(): void
@@ -53,12 +76,44 @@ class ModelTest extends WebTestCase
 
     public function testDeleteActionPermissions(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        BackendModel::getContainer()->get('database')->insert(
+            'groups_rights_actions',
+            ['group_id' => 1, 'module' => 'test', 'action' => 'test_action', 'level' => 7]
+        );
+
+        Model::deleteActionPermissions(
+            [
+                ['group_id' => 1, 'module' => 'test', 'action' => 'test_action', 'level' => 7],
+            ]
+        );
+
+        $actionPermissions = BackendModel::getContainer()->get('database')->getRecords(
+            'SELECT * FROM groups_rights_actions WHERE group_id = ? AND module = ? AND action = ? AND level = ?',
+            [1, 'test', 'test_action', 7]
+        );
+
+        $this->assertNull($actionPermissions);
     }
 
     public function testDeleteModulePermissions(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        BackendModel::getContainer()->get('database')->insert(
+            'groups_rights_modules',
+            ['group_id' => 1, 'module' => 'test']
+        );
+
+        Model::deleteModulePermissions(
+            [
+                ['group_id' => 1, 'module' => 'test'],
+            ]
+        );
+
+        $modulePermissions = BackendModel::getContainer()->get('database')->getRecords(
+            'SELECT * FROM groups_rights_actions WHERE group_id = ? AND module = ?',
+            [1, 'test']
+        );
+
+        $this->assertNull($modulePermissions);
     }
 
     public function testDeleteMultipleGroups(): void
@@ -86,12 +141,28 @@ class ModelTest extends WebTestCase
 
     public function testExistsActionPermission(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        BackendModel::getContainer()->get('database')->insert(
+            'groups_rights_actions',
+            ['group_id' => 1, 'module' => 'test', 'action' => 'test_action', 'level' => 7]
+        );
+
+        $exists = Model::existsActionPermission(
+            ['group_id' => 1, 'module' => 'test', 'action' => 'test_action', 'level' => 7]
+        );
+
+        $this->assertTrue($exists);
     }
 
     public function testExistsModulePermission(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        BackendModel::getContainer()->get('database')->insert(
+            'groups_rights_modules',
+            ['group_id' => 1, 'module' => 'test']
+        );
+
+        $exists = Model::existsModulePermission(['group_id' => 1, 'module' => 'test']);
+
+        $this->assertTrue($exists);
     }
 
     public function testGet(): void
@@ -109,7 +180,9 @@ class ModelTest extends WebTestCase
 
     public function testGetActionPermissions(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        $actionPermissions = Model::getActionPermissions('1');
+
+        $this->assertCount(145, $actionPermissions);
     }
 
     public function testGetAll(): void
@@ -145,7 +218,13 @@ class ModelTest extends WebTestCase
 
     public function testGetModulePermissions(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        $modulePermissions = Model::getModulePermissions(1);
+
+        $this->assertCount(17, $modulePermissions);
+
+        $modulePermissions = Model::getModulePermissions(10);
+
+        $this->assertCount(0, $modulePermissions);
     }
 
     public function testGetSetting(): void
@@ -156,7 +235,9 @@ class ModelTest extends WebTestCase
 
     public function testGetUsers(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        $users = Model::getUsers(1);
+
+        $this->assertCount(1, $users);
     }
 
     public function testInsert(): void
@@ -193,7 +274,11 @@ class ModelTest extends WebTestCase
 
     public function testInsertMultipleGroups(): void
     {
-        $this->markTestSkipped('Not implemented yet');
+        Model::insertMultipleGroups(1, [1, 2, 3]);
+
+        $groups = Model::getGroupsByUser(1);
+
+        $this->assertCount(3, $groups);
     }
 
     public function testInsertSetting(): void
