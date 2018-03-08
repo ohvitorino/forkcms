@@ -10,6 +10,7 @@ use Backend\Modules\Groups\Domain\RightsAction\RightsActionRepository;
 use Backend\Modules\Groups\Domain\RightsModule\RightsModule;
 use Backend\Modules\Groups\Domain\RightsModule\RightsModuleRepository;
 use Backend\Modules\Groups\Domain\Setting\Setting;
+use Backend\Modules\Groups\Domain\Setting\SettingRepository;
 
 /**
  * In this file we store all generic functions that we will be using in the groups module.
@@ -258,11 +259,16 @@ class Model
 
     public static function getModulePermissions(int $groupId): array
     {
-        return (array) BackendModel::getContainer()->get('database')->getRecords(
-            'SELECT i.*
-             FROM groups_rights_modules AS i
-             WHERE i.group_id = ?',
-            [$groupId]
+        /** @var RightsModuleRepository $rightsModuleRepository */
+        $rightsModuleRepository = BackendModel::getContainer()->get('groups.repository.rights_module');
+
+        $rightsModules = $rightsModuleRepository->findBy(['group' => $groupId]);
+
+        return array_map(
+            function (RightsModule $rightsModule) {
+                return $rightsModule->jsonSerialize();
+            },
+            $rightsModules
         );
     }
 
