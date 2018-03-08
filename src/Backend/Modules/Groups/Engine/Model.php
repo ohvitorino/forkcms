@@ -143,6 +143,7 @@ class Model
 
     public static function deleteMultipleGroups(int $userId): void
     {
+        // @todo User has to be converted to an Entity
         BackendModel::getContainer()->get('database')->delete('users_groups', 'user_id = ?', [$userId]);
     }
 
