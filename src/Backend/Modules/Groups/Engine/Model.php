@@ -7,6 +7,8 @@ use Backend\Modules\Groups\Domain\Group\Group;
 use Backend\Modules\Groups\Domain\Group\GroupRepository;
 use Backend\Modules\Groups\Domain\RightsAction\RightsAction;
 use Backend\Modules\Groups\Domain\RightsAction\RightsActionRepository;
+use Backend\Modules\Groups\Domain\RightsModule\RightsModule;
+use Backend\Modules\Groups\Domain\RightsModule\RightsModuleRepository;
 use Backend\Modules\Groups\Domain\Setting\Setting;
 
 /**
@@ -52,9 +54,21 @@ class Model
 
     public static function addModulePermissions(array $modulePermissions): void
     {
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::getContainer()->get('groups.repository.group');
+        /** @var RightsModuleRepository $rightsModuleRepository */
+        $rightsModuleRepository = BackendModel::getContainer()->get('groups.repository.rights_module');
+
         foreach ((array) $modulePermissions as $permission) {
             if (!self::existsModulePermission($permission)) {
-                BackendModel::getContainer()->get('database')->insert('groups_rights_modules', $permission);
+                /** @var Group $group */
+                $group = $groupRepository->find($permission['group_id']);
+
+                if (!$group instanceof Group) {
+                    continue;
+                }
+
+                $rightsModuleRepository->add(new RightsModule($group, $permission['module']));
             }
         }
     }
@@ -142,12 +156,15 @@ class Model
 
     public static function existsModulePermission(array $permission): bool
     {
-        return (bool) BackendModel::getContainer()->get('database')->getVar(
-            'SELECT i.*
-             FROM groups_rights_modules AS i
-             WHERE i.module = ? AND i.group_id = ?',
-            [$permission['module'], $permission['group_id']]
-        );
+        /** @var RightsModuleRepository $rightsModuleRepository */
+        $rightsModuleRepository = BackendModel::getContainer()->get('groups.repository.rights_module');
+
+        return $rightsModuleRepository->findOneBy(
+            [
+                'group' => $permission['group_id'],
+                'module' => $permission['module'],
+            ]
+        ) instanceof RightsModule;
     }
 
     public static function get(int $groupId): array

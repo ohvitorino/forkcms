@@ -6,7 +6,7 @@ use Backend\Modules\Groups\Domain\Group\Group;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Backend\Modules\Groups\Domain\RightsModule\RightsModuleRepository")
  * @ORM\Table(name="groups_rights_modules")
  */
 class RightsModule
