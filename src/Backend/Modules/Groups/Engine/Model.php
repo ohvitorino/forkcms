@@ -233,6 +233,7 @@ class Model
 
     public static function getGroupsByUser(int $userId): array
     {
+        // @todo User has to be converted to an Entity
         return (array) BackendModel::getContainer()->get('database')->getRecords(
             'SELECT i.id, i.name
              FROM groups AS i
