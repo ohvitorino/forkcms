@@ -9,3 +9,8 @@ services:
     factory: ["@doctrine.orm.entity_manager", getRepository]
     arguments:
       - Backend\Modules\Groups\Domain\Setting\Setting
+  groups.repository.rights_action:
+    class: Backend\Modules\Groups\Domain\RightsAction\RightsActionRepository
+    factory: ["@doctrine.orm.entity_manager", getRepository]
+    arguments:
+      - Backend\Modules\Groups\Domain\RightsAction\RightsAction

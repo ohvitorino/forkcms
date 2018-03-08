@@ -6,7 +6,7 @@ use Backend\Modules\Groups\Domain\Group\Group;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Backend\Modules\Groups\Domain\RightsAction\RightsActionRepository")
  * @ORM\Table(name="groups_rights_actions")
  */
 class RightsAction
@@ -49,16 +49,8 @@ class RightsAction
      */
     private $level;
 
-    /**
-     * @param int $id
-     * @param Group $group
-     * @param string $module
-     * @param string $action
-     * @param int $level
-     */
-    public function __construct(int $id, Group $group, string $module, string $action, int $level)
+    public function __construct(Group $group, string $module, string $action, int $level)
     {
-        $this->id = $id;
         $this->group = $group;
         $this->module = $module;
         $this->action = $action;

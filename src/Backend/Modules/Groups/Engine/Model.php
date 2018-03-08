@@ -5,6 +5,8 @@ namespace Backend\Modules\Groups\Engine;
 use Backend\Core\Engine\Model as BackendModel;
 use Backend\Modules\Groups\Domain\Group\Group;
 use Backend\Modules\Groups\Domain\Group\GroupRepository;
+use Backend\Modules\Groups\Domain\RightsAction\RightsAction;
+use Backend\Modules\Groups\Domain\RightsAction\RightsActionRepository;
 use Backend\Modules\Groups\Domain\Setting\Setting;
 
 /**
@@ -27,9 +29,23 @@ class Model
 
     public static function addActionPermissions(array $actionPermissions): void
     {
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::getContainer()->get('groups.repository.group');
+        /** @var RightsActionRepository $rightsActionRepository */
+        $rightsActionRepository = BackendModel::getContainer()->get('groups.repository.rights_action');
+
         foreach ((array) $actionPermissions as $permission) {
             if (!self::existsActionPermission($permission)) {
-                BackendModel::getContainer()->get('database')->insert('groups_rights_actions', $permission);
+                /** @var Group $group */
+                $group = $groupRepository->find($permission['group_id']);
+
+                if (!$group instanceof Group) {
+                    continue;
+                }
+
+                $rightsActionRepository->add(
+                    new RightsAction($group, $permission['module'], $permission['action'], $permission['level'])
+                );
             }
         }
     }
@@ -112,12 +128,16 @@ class Model
 
     public static function existsActionPermission(array $permission): bool
     {
-        return (bool) BackendModel::getContainer()->get('database')->getVar(
-            'SELECT i.*
-             FROM groups_rights_actions AS i
-             WHERE i.module = ? AND i.group_id = ? AND i.action = ?',
-            [$permission['module'], $permission['group_id'], $permission['action']]
-        );
+        /** @var RightsActionRepository $rightActionRepository */
+        $rightActionRepository = BackendModel::getContainer()->get('groups.repository.rights_action');
+
+        return $rightActionRepository->findOneBy(
+            [
+                'module' => $permission['module'],
+                'group' => $permission['group_id'],
+                'action' => $permission['action'],
+            ]
+        ) instanceof RightsAction;
     }
 
     public static function existsModulePermission(array $permission): bool
@@ -293,6 +313,11 @@ class Model
 
     public static function updateSetting(array $setting): void
     {
-        BackendModel::getContainer()->get('database')->update('groups_settings', ['value' => $setting['value']], 'group_id = ? AND name = ?', [$setting['group_id'], $setting['name']]);
+        BackendModel::getContainer()->get('database')->update(
+            'groups_settings',
+            ['value' => $setting['value']],
+            'group_id = ? AND name = ?',
+            [$setting['group_id'], $setting['name']]
+        );
     }
 }
