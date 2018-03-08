@@ -11,4 +11,10 @@ class RightsModuleRepository extends EntityRepository
         $this->getEntityManager()->persist($rightsModule);
         $this->getEntityManager()->flush($rightsModule);
     }
+
+    public function remove(RightsModule $rightsModule): void
+    {
+        $this->getEntityManager()->remove($rightsModule);
+        $this->getEntityManager()->flush($rightsModule);
+    }
 }

@@ -122,11 +122,21 @@ class Model
     {
         foreach ((array) $modulePermissions as $permission) {
             if (self::existsModulePermission($permission)) {
-                BackendModel::getContainer()->get('database')->delete(
-                    'groups_rights_modules',
-                    'group_id = ? AND module = ?',
-                    [$permission['group_id'], $permission['module']]
+                /** @var RightsModuleRepository $rightsModuleRepository */
+                $rightsModuleRepository = BackendModel::getContainer()->get('groups.repository.rights_module');
+
+                $rightsModule = $rightsModuleRepository->findOneBy(
+                    [
+                        'group' => $permission['group_id'],
+                        'module' => $permission['module'],
+                    ]
                 );
+
+                if (!$rightsModule instanceof RightsModule) {
+                    return;
+                }
+
+                $rightsModuleRepository->remove($rightsModule);
             }
         }
     }
