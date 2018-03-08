@@ -4,12 +4,13 @@ namespace Backend\Modules\Groups\Domain\RightsAction;
 
 use Backend\Modules\Groups\Domain\Group\Group;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="Backend\Modules\Groups\Domain\RightsAction\RightsActionRepository")
  * @ORM\Table(name="groups_rights_actions")
  */
-class RightsAction
+class RightsAction implements JsonSerializable
 {
     /**
      * @var int
@@ -80,5 +81,16 @@ class RightsAction
     public function getLevel(): int
     {
         return $this->level;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'group_id' => $this->getGroup()->getId(),
+            'module' => $this->getModule(),
+            'action' => $this->getAction(),
+            'level' => $this->getLevel(),
+        ];
     }
 }

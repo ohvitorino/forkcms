@@ -206,11 +206,15 @@ class Model
 
     public static function getActionPermissions(int $groupId): array
     {
-        return (array) BackendModel::getContainer()->get('database')->getRecords(
-            'SELECT i.module, i.action
-             FROM groups_rights_actions AS i
-             WHERE i.group_id = ?',
-            [$groupId]
+        /** @var RightsActionRepository $rightActionRepository */
+        $rightActionRepository = BackendModel::getContainer()->get('groups.repository.rights_action');
+        $rightsActions = $rightActionRepository->findBy(['group' => $groupId]);
+
+        return array_map(
+            function (RightsAction $rightsAction) {
+                return $rightsAction->jsonSerialize();
+            },
+            $rightsActions
         );
     }
 
