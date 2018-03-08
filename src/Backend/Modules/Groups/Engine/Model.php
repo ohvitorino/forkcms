@@ -320,6 +320,7 @@ class Model
 
     public static function insertMultipleGroups(int $userId, array $groups): void
     {
+        // @todo User has to be converted to an Entity
         // delete all previous user groups
         self::deleteMultipleGroups($userId);
 
