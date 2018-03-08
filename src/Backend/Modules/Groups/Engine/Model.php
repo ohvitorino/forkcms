@@ -98,11 +98,22 @@ class Model
     {
         foreach ((array) $actionPermissions as $permission) {
             if (self::existsActionPermission($permission)) {
-                BackendModel::getContainer()->get('database')->delete(
-                    'groups_rights_actions',
-                    'group_id = ? AND module = ? AND action = ?',
-                    [$permission['group_id'], $permission['module'], $permission['action']]
+                /** @var RightsActionRepository $rightsActionRepository */
+                $rightsActionRepository = BackendModel::getContainer()->get('groups.repository.rights_action');
+
+                $rightsAction = $rightsActionRepository->findOneBy(
+                    [
+                        'group' => $permission['group_id'],
+                        'module' => $permission['module'],
+                        'action' => $permission['action'],
+                    ]
                 );
+
+                if (!$rightsAction instanceof RightsAction) {
+                    return;
+                }
+
+                $rightsActionRepository->remove($rightsAction);
             }
         }
     }

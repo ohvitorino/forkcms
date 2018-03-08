@@ -11,4 +11,10 @@ class RightsActionRepository extends EntityRepository
         $this->getEntityManager()->persist($rightsAction);
         $this->getEntityManager()->flush($rightsAction);
     }
+
+    public function remove(RightsAction $rightsAction): void
+    {
+        $this->getEntityManager()->remove($rightsAction);
+        $this->getEntityManager()->flush($rightsAction);
+    }
 }
