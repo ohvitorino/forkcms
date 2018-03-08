@@ -274,19 +274,16 @@ class Model
 
     public static function getSetting(int $groupId, string $settingName): array
     {
-        $setting = (array) BackendModel::getContainer()->get('database')->getRecord(
-            'SELECT i.value
-             FROM groups_settings AS i
-             WHERE i.group_id = ? AND i.name = ?',
-            [$groupId, $settingName]
-        );
+        /** @var SettingRepository $settingRepository */
+        $settingRepository = BackendModel::getContainer()->get('groups.repository.setting');
+        $setting = $settingRepository->findOneBy(['group' => $groupId, 'name' => $settingName]);
 
-        if (empty($setting)) {
+        if (!$setting instanceof Setting) {
             return [];
         }
 
-        if (isset($setting['value'])) {
-            return unserialize($setting['value']);
+        if ($setting->getValue()) {
+            return unserialize($setting->getValue());
         }
 
         return [];
