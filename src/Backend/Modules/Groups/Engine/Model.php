@@ -368,11 +368,15 @@ class Model
 
     public static function updateSetting(array $setting): void
     {
-        BackendModel::getContainer()->get('database')->update(
-            'groups_settings',
-            ['value' => $setting['value']],
-            'group_id = ? AND name = ?',
-            [$setting['group_id'], $setting['name']]
-        );
+        /** @var SettingRepository $settingRepository */
+        $settingRepository = BackendModel::getContainer()->get('groups.repository.setting');
+        $settingObject = $settingRepository->findOneBy(['group' => $setting['group_id'], 'name' => $setting['name']]);
+
+        if (!$settingObject instanceof Setting) {
+            return;
+        }
+
+        $settingObject->update($setting['name'], $setting['value']);
+        $settingRepository->save($settingObject);
     }
 }

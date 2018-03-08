@@ -11,4 +11,9 @@ class SettingRepository extends EntityRepository
         $this->getEntityManager()->persist($setting);
         $this->getEntityManager()->flush($setting);
     }
+
+    public function save(Setting $settingObject): void
+    {
+        $this->getEntityManager()->flush($settingObject);
+    }
 }
