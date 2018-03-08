@@ -220,8 +220,14 @@ class Model
 
     public static function getAll(): array
     {
-        return (array) BackendModel::getContainer()->get('database')->getRecords(
-            'SELECT i.id AS value, i.name AS label FROM groups AS i'
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = BackendModel::getContainer()->get('groups.repository.group');
+
+        return array_map(
+            function (Group $group) {
+                return ['id' => $group->getId(), 'label' => $group->getName()];
+            },
+            $groupRepository->findAll()
         );
     }
 
