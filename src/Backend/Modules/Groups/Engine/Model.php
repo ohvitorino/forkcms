@@ -291,6 +291,7 @@ class Model
 
     public static function getUsers(int $groupId): array
     {
+        // @todo User has to be converted to an Entity
         return (array) BackendModel::getContainer()->get('database')->getRecords(
             'SELECT i.*
              FROM users AS i
